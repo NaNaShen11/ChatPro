@@ -24,7 +24,7 @@ func (accept *Accept) Accpet() {
 	//读取消息
 	for {
 		reader := bufio.NewReader(accept.Conn)
-		//读取消息长度
+		//解析消息
 		opType, data, err := util.Decode(reader)
 		fmt.Println("opType:", opType)
 		if err != nil {
@@ -33,6 +33,9 @@ func (accept *Accept) Accpet() {
 		switch opType {
 		case fmt.Sprint(LoginRequest):
 			handler.Login(data)
+		case fmt.Sprint(SendChatRequest):
+			handler.Chat(data, accept.C)
+
 		}
 	}
 }
