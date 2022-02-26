@@ -2,17 +2,17 @@ package main
 
 import (
 	"chatPro/src/proto/protoc"
-	"encoding/binary"
+	"chatPro/src/util"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"net"
 )
 
 const (
-	LoginRequest = 1001
-	LoginReply = 2001
+	LoginRequest    = 1001
+	LoginReply      = 2001
 	SendChatRequest = 1002
-	SendChatReply = 2002
+	SendChatReply   = 2002
 )
 
 type Message struct {
@@ -20,7 +20,7 @@ type Message struct {
 }
 
 var (
-	name string
+	name     string
 	password string
 )
 
@@ -48,23 +48,13 @@ func main() {
 			fmt.Println("marshal err")
 			return
 		}
-		cmd := protoc.Cmd{Id: LoginRequest, Data: string(data)}
-		data, err = proto.Marshal(&cmd)
+		//编码
+		data, err = util.Encode(string(data), LoginRequest)
 		//发送数据
-		var dataLen uint32
-		dataLen = uint32(len(data))
-		var bytes [4]byte
-		binary.BigEndian.PutUint32(bytes[0:4], dataLen)
-		//发送消息长度
-		n, err := conn.Write(bytes[:])
+		_, err = conn.Write(data)
 		if err != nil {
 			return
 		}
-		//发送消息本身
-		n, err = conn.Write(data)
-		if err != nil {
-			return
-		}
-		fmt.Println("senData,%v", n)
+		fmt.Println("senData,%s", data)
 	}
 }
