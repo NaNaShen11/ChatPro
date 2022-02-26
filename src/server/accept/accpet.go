@@ -1,6 +1,7 @@
-package handle
+package accept
 
 import (
+	"bufio"
 	"chatPro/src/proto/protoc"
 	"encoding/binary"
 	"fmt"
@@ -15,21 +16,22 @@ const (
 	SendChatReply = 2002
 )
 
-type Handler struct {
+type Accept struct {
 	Conn net.Conn
 }
 
-func (handler *Handler) HandlerMain()  {
-	var buf [1024]byte
+func (accept *Accept) Accpet()  {
 	//读取消息
 	for  {
 		//读取消息长度
-		len,err :=handler.Conn.Read(buf[0:4])
+		reader :=bufio.NewReader(accept.Conn)
+
+		len,err :=accept.Conn.Read(buf[0:4])
 		if err!=nil{
 			return
 		}
 		datalen := binary.BigEndian.Uint32(buf[0:4])
-		len,err = handler.Conn.Read(buf[0:datalen])
+		len,err = accept.Conn.Read(buf[0:datalen])
 		if err!=nil{
 			return
 		}
