@@ -2,10 +2,9 @@ package accept
 
 import (
 	"bufio"
-	"chatPro/src/proto/protoc"
+	"chatPro/src/server/handler"
 	"chatPro/src/util"
 	"fmt"
-	"github.com/golang/protobuf/proto"
 	"net"
 )
 
@@ -27,22 +26,13 @@ func (accept *Accept) Accpet() {
 		reader := bufio.NewReader(accept.Conn)
 		//读取消息长度
 		opType, data, err := util.Decode(reader)
+		fmt.Println("opType:", opType)
 		if err != nil {
-			return
-		}
-		//解析数据
-		var person protoc.Person
-		err = proto.Unmarshal(data, &person)
-		if err != nil {
-			fmt.Println("unmarshal err:", err.Error())
 			return
 		}
 		switch opType {
 		case fmt.Sprint(LoginRequest):
-			fmt.Println("opType:", opType)
-			fmt.Println("name:", person.Name)
-			fmt.Println("password:", person.Password)
-			//登陆成功 存入客户端conn信息
+			handler.Login(data)
 		}
 	}
 }
